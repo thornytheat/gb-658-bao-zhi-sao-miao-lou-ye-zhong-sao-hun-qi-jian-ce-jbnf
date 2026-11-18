@@ -1,0 +1,27 @@
+<!doctype html>
+{% extends "base.html" %}
+{% block content %}
+<section class="kpis">
+  <div class="kpi"><b>期版组</b><strong>2</strong><small>个</small></div>
+  <div class="kpi"><b>必须补扫</b><strong>3</strong><small>页</small></div>
+  <div class="kpi"><b>待裁决</b><strong>2</strong><small>件</small></div>
+  <div class="kpi"><b>规则版</b><strong>1.7</strong><small>v</small></div>
+</section>
+<div class="grid grid--receipt">
+  <section class="panel">
+    <div class="panel__head"><h2>缺页清单</h2><span class="state state--ok">可交付</span></div>
+    <div class="panel__body panel__body--scroll">
+      <table class="ledger"><thead><tr><th>序号</th><th>业务键</th><th>状态</th><th class="num">值</th></tr></thead>
+      <tbody>{% for row in rows %}<tr><td class="num">{{ loop.index }}</td><td>{{ row.key }}</td><td>{{ row.status }}</td><td class="num">{{ row.value }}</td></tr>{% endfor %}</tbody></table>
+    </div>
+  </section>
+  <section class="panel panel--evidence">
+    <div class="panel__head"><h2>证据</h2><span class="panel__meta">逐页</span></div>
+    <div class="panel__body"><div class="evidence"><b>M7</b><span>RESCAN / WAIT</span><code>/api/missing/list</code></div><pre id="result">等待运行</pre></div>
+  </section>
+  <section class="panel panel--status">
+    <div class="panel__head"><h2>出单口径</h2><span class="panel__meta">两栏并列</span></div>
+    <div class="panel__body"><div class="legend"><span>RESCAN 直接补扫</span><span>WAIT 先等归属</span></div></div>
+  </section>
+</div>
+{% endblock %}

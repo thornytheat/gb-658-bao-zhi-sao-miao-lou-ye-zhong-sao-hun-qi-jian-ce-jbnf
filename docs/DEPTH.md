@@ -14,6 +14,7 @@
 | M4 重扫判定 | 比较扫描候选并保留清晰版本 | POST /api/rescans/evaluate | `app/modules/m4_rescans/similarity.py` `app/modules/m4_rescans/decision.py` | `tests/test_m4_rescans.py` |
 | M5 混期归因 | 用页眉和页码证据裁决混期 | POST /api/mixed/evaluate | `app/modules/m5_mixed/evidence.py` `app/modules/m5_mixed/conflicts.py` | `tests/test_m5_mixed.py` |
 | M6 批次对账 | 检查四账并导出证据 | POST /api/reconcile | `app/modules/m6_batches/compare.py` `app/modules/m6_batches/exporter.py` | `tests/test_m6_batches.py` |
+| M7 缺页清单 | 列补扫/待裁决页，补证改期后重算两期 | POST /api/missing/list、/api/missing/reassign | `app/modules/m7_missing/attribution.py` `app/modules/m7_missing/selection.py` `app/modules/m7_missing/listing.py` `app/modules/m7_missing/ledger.py` | `tests/test_m7_missing.py` |
 
 ## 陷阱登记
 
@@ -29,6 +30,10 @@
 | TRAP-19 | 候选顺序改变 | 先到者决定保留项 | 显式排序键保持顺序无关 | `app/modules/m3_pages/sequence.py` | `tests/test_m3_pages.py::test_selection_order_independent` |
 | TRAP-22 | 同内容多别名 | 合并顺序改变代表扫描 | 清晰度后以时间和文件名择一 | `app/modules/m4_rescans/decision.py` | `tests/test_m4_rescans.py::test_selection_is_deterministic_on_tie` |
 | TRAP-26 | 陈旧重扫晚提交 | 旧版本覆盖新版 | 版本优先于输入顺序 | `app/modules/m3_pages/sequence.py` | `tests/test_m3_pages.py::test_higher_version_wins_not_later_input` |
+| TRAP-27 | 重扫件页眉看不清 | 当作一致或直接列缺页补扫 | 列待裁决 WAIT，跨两期可见但按扫描件去重 | `app/modules/m7_missing/listing.py` | `tests/test_m7_missing.py::test_blurry_rescan_page_is_held_not_counted` |
+| TRAP-28 | 先等归属会误重扫 | 待定页不列出，印务以为无候选 | 待定页进入清单并带候选证据，只有无候选才标 RESCAN | `app/modules/m7_missing/listing.py` | `tests/test_m7_missing.py::test_mixed_candidate_visible_to_both_issues` |
+| TRAP-29 | 改期中断后重试 | 旧版清单被半成品覆盖、改期重复记 | 改期与新版清单同事务，失败回滚保留旧版；按当前归属幂等 | `app/modules/m7_missing/ledger.py` | `tests/test_m7_missing.py::test_interrupted_reassign_keeps_old_listing` `tests/test_m7_missing.py::test_retry_after_interruption_records_once` |
+| TRAP-30 | 改期只重算一期 | 新期多出的页/原期缺的页对不上 | 一次改期同时重算原期与新期 | `app/modules/m7_missing/service.py` | `tests/test_m7_missing.py::test_reassign_recomputes_both_issues` |
 
 ## 对账规则
 
